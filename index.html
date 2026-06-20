@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UAE VAT Applicability Check</title>
+  <style>
+    :root{
+      --ink:#0b1b3a; --muted:#42526e; --blue:#1677e8; --blue2:#e9f4ff; --line:#dbe6f3;
+      --green:#1d8f3a; --green-bg:#f1fbf2; --amber:#a86d00; --amber-bg:#fff8e8;
+      --shadow:0 10px 30px rgba(20,55,90,.10); --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:#f7fbff;color:var(--ink);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;line-height:1.45}
+    .page{max-width:1180px;margin:28px auto;padding:0 22px}
+    .hero,.panel,.info-card,.note{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero{overflow:hidden;margin-bottom:28px}
+    .hero-top{position:relative;min-height:215px;padding:34px 38px;background:linear-gradient(90deg,#fff 0%,#fff 58%,#f3faff 100%)}
+    h1{font-size:43px;line-height:1.05;margin:0 0 16px;font-weight:800;letter-spacing:-.6px}
+    .subtitle{font-size:19px;color:#34476a;max-width:610px;margin:0}
+    .skyline{position:absolute;right:34px;bottom:0;width:410px;height:180px;opacity:.9}
+    .tabbar{display:flex;padding:20px 24px 0;background:linear-gradient(#fff,#fbfdff)}
+    .tab{flex:0 0 375px;border:1px solid var(--line);border-bottom:0;background:#fff;padding:20px;text-align:center;font-size:21px;font-weight:750;color:#2b3955;cursor:pointer}
+    .tab:first-child{border-radius:10px 0 0 0}.tab:last-child{border-radius:0 10px 0 0}
+    .tab.active{border-color:#41a0ff;color:#063b8c;background:linear-gradient(#fff,#f4faff);box-shadow:0 -2px 0 #41a0ff inset}
+    .checker{margin:0 24px 10px;border:1px solid #cfe0f5;border-radius:12px;padding:36px 26px 26px;background:#fff}
+    .grid{display:grid;grid-template-columns:1fr 50px 1fr 1px 305px;gap:26px;align-items:center}
+    .vline{height:300px;border-left:2px dashed #d8e5f4}
+    h2{font-size:21px;margin:0 0 20px}.option{display:flex;align-items:center;gap:16px;height:64px;border:1px solid #d5e2f0;border-radius:10px;margin:18px 0;padding:0 16px;background:linear-gradient(90deg,#fff,#fbfdff);cursor:pointer;transition:.15s}
+    .option:hover,.option.selected{border-color:#6bb5ff;box-shadow:0 4px 16px rgba(22,119,232,.12)}
+    .radio{width:20px;height:20px;border:2px solid #aab9cc;border-radius:50%;display:inline-block;position:relative;flex:none}.selected .radio{border-color:var(--blue)}.selected .radio:after{content:"";position:absolute;inset:4px;background:var(--blue);border-radius:50%}
+    .ico{font-size:25px;width:28px;text-align:center}.arrow{text-align:center;font-size:43px;color:var(--blue);font-weight:500}.result-wrap{text-align:center}.result-box{border:1px solid #8bd09a;background:linear-gradient(135deg,#fff,#f0fbf1);border-radius:14px;padding:30px 18px;min-height:205px;display:flex;flex-direction:column;justify-content:center}
+    .big{font-size:64px;font-weight:850;color:var(--green);line-height:1}.result-title{font-size:22px;color:var(--green);font-weight:800;margin:10px 0}.desc{color:#34476a;font-size:17px}.hint{margin-top:28px;border:1px solid #cfe0f5;background:#f6fbff;border-radius:9px;padding:14px 18px;color:#12437a}
+    .panel{padding:28px;margin-bottom:26px}.panel h2{font-size:23px}.rules{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}.rules th,.rules td{padding:15px 20px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:left}.rules th{background:#f3f9ff;color:#0057b8}.rules tr:last-child td{border-bottom:0}.rules th:last-child,.rules td:last-child{border-right:0}.small{width:90px}
+    .lower{display:grid;grid-template-columns:1fr 1fr;gap:36px}.info-card{padding:18px 16px}.card-title{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:800;margin-bottom:18px}.badge{width:42px;height:42px;border-radius:50%;background:#e7f8eb;color:var(--green);display:grid;place-items:center;font-size:25px}.exempt-grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:9px;overflow:hidden}.exempt{display:grid;grid-template-columns:46px 1fr;gap:12px;align-items:center;padding:18px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.exempt:nth-child(even){border-right:0}.exempt:nth-child(n+3){border-bottom:0}.num{background:#e9f8ee;color:var(--green);border:1px solid #c9efd2;border-radius:8px;font-weight:800;font-size:24px;text-align:center;padding:6px 0}.info-card ul{margin:0;padding-left:28px;color:#34476a;font-size:17px}.info-card li{margin:10px 0}.note{margin-top:16px;background:var(--amber-bg);border-color:#f2d28c;color:#33415f;padding:18px 28px;display:flex;gap:18px}.note .badge{background:#fff2d3;color:var(--amber)}
+    @media(max-width:900px){.skyline{opacity:.25}.tab{flex:1}.grid{grid-template-columns:1fr}.arrow,.vline{display:none}.lower{grid-template-columns:1fr}h1{font-size:34px}.page{padding:0 12px}.checker{margin:0 12px 10px}.hero-top{padding:28px 24px}.tabbar{padding:16px 12px 0}.big{font-size:50px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <div class="hero-top">
+      <h1>UAE VAT Applicability Check</h1>
+      <p class="subtitle">Check VAT applicability for Goods and Services based on movement of goods or place of residence of supplier.</p>
+      <svg class="skyline" viewBox="0 0 520 230" aria-hidden="true">
+        <rect x="0" y="202" width="520" height="28" fill="#d7edf9"/><path d="M50 205c30-35 55-35 78 0M20 207c16-18 34-18 52 0" fill="none" stroke="#9ed5c8" stroke-width="9" stroke-linecap="round"/><text x="348" y="80" font-size="66">🇦🇪</text><rect x="225" y="135" width="16" height="70" fill="#c8dff0"/><rect x="250" y="115" width="20" height="90" fill="#bdd7ea"/><rect x="278" y="72" width="14" height="133" fill="#b1d0e5"/><polygon points="335,8 350,205 320,205" fill="#9bc3df"/><polygon points="395,0 413,205 375,205" fill="#8eb9d9"/><circle cx="92" cy="125" r="25" fill="#93d2be"/><rect x="88" y="142" width="8" height="65" fill="#8fb791"/><path d="M90 130c-35-5-55 14-65 42M94 130c35-16 59-8 80 24M92 123c-18-32-45-38-74-18M95 124c20-30 45-38 72-22" stroke="#74bea8" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="468" cy="142" r="20" fill="#9edbc8"/><rect x="465" y="158" width="7" height="48" fill="#8fb791"/></svg>
+    </div>
+    <div class="tabbar"><button class="tab active" data-type="goods">▱ &nbsp; Goods</button><button class="tab" data-type="services">♚ &nbsp; Services</button></div>
+    <div class="checker">
+      <div class="grid">
+        <div><h2>1. Supplier Location</h2><div id="supplier"></div></div>
+        <div class="arrow">→</div>
+        <div><h2>2. Customer Location</h2><div id="customer"></div></div>
+        <div class="vline"></div>
+        <div class="result-wrap"><h2>VAT Applicability</h2><div class="result-box"><div class="big" id="big">5%</div><div class="result-title" id="rtitle">VAT @ 5%</div><div class="desc" id="rdesc">This supply is subject to 5% VAT.</div></div></div>
+      </div>
+      <div class="hint" id="hint">ⓘ Result is based on actual movement of goods from supplier’s location to customer’s location.</div>
+    </div>
+  </section>
+
+  <section class="panel"><h2>Special Place of Supply Rules (Exceptions)</h2><table class="rules"><thead><tr><th class="small">S.No</th><th>Scenarios</th><th>Place Of Supply</th></tr></thead><tbody>
+    <tr><td>1</td><td>Installation of goods and connected services</td><td>Place where goods are installed</td></tr><tr><td>2</td><td>Services related to Real estate</td><td>Location of real estate</td></tr><tr><td>3</td><td>Hotel, Restaurant, Food and drinking catering services</td><td>Place of service performance</td></tr><tr><td>4</td><td>Telecommunication and electronically supplied services</td><td>Place of actual service usage</td></tr><tr><td>5</td><td>Cultural, Artistic, sporting, education or similar services</td><td>Place of service performance</td></tr><tr><td>6</td><td>Supply of means of transport to a non-resident on lease</td><td>Place where means of transport was given</td></tr><tr><td>7</td><td>Transportation services</td><td>Place where Transportation Begins</td></tr>
+  </tbody></table></section>
+
+  <div class="lower"><section class="info-card"><div class="card-title"><span class="badge">▣</span>Exempt Supplies (Exempt from VAT)</div><div class="exempt-grid"><div class="exempt"><span class="num">1</span><span>Residential Buildings</span></div><div class="exempt"><span class="num">3</span><span>Local Passenger Transport Services</span></div><div class="exempt"><span class="num">2</span><span>Supply of Financial Services</span></div><div class="exempt"><span class="num">4</span><span>Bare Land</span></div></div></section>
+    <section class="info-card"><div class="card-title"><span class="badge" style="background:#eaf4ff;color:#1677e8">ⓘ</span>General Information</div><ul><li>For Goods: VAT applicability is based on actual movement of goods from supplier’s location to customer’s location.</li><li>For Services: VAT applicability is based on the general place of supply rule i.e., the place of residence of supplier.</li></ul></section></div>
+  <div class="note"><span class="badge">▤</span><div><b>*</b> If the goods are used for own Consumption in designated zone i.e., no further resale, then VAT @ 5% will be applicable.<br><b>**</b> When the recipient of service does not have place of residence in UAE and is outside UAE at the time of performance of such services.</div></div>
+</div>
+<script>
+const locations=[['mainland','📍','Mainland'],['designated','🏢','Designated Zone'],['outside','🌐','Outside UAE']];
+const matrix={
+ goods:{mainland:{mainland:'vat5',designated:'vat5',outside:'zero'},designated:{mainland:'rcm',designated:'out-note',outside:'out'},outside:{mainland:'rcm',designated:'out',outside:'out'}},
+ services:{mainland:{mainland:'vat5',designated:'vat5',outside:'zero-note'},designated:{mainland:'vat5',designated:'vat5',outside:'zero-note'},outside:{mainland:'rcm',designated:'rcm',outside:'out'}}
+};
+const labels={vat5:['5%','VAT @ 5%','This supply is subject to 5% VAT.'],zero:['0%','VAT @ 0%','This supply is zero-rated.'],rcm:['RCM','RCM @ 5%','Recipient to account for VAT under reverse charge mechanism.'],out:['O/S','Out of Scope','This transaction is outside the scope of UAE VAT.'], 'out-note':['O/S*','Out of Scope *','Out of scope, subject to own consumption note.'], 'zero-note':['0%**','VAT @ 0% **','Zero-rated subject to non-resident recipient condition.']};
+let state={type:'goods',supplier:'mainland',customer:'mainland'};
+function renderOptions(id,field){document.getElementById(id).innerHTML=locations.map(([key,ico,name])=>`<div class="option ${state[field]===key?'selected':''}" data-field="${field}" data-key="${key}"><span class="radio"></span><span class="ico">${ico}</span><span>${name}</span></div>`).join('')}
+function update(){renderOptions('supplier','supplier');renderOptions('customer','customer');document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.type===state.type));let code=matrix[state.type][state.supplier][state.customer];let [big,title,desc]=labels[code];big=document.getElementById('big').textContent=big;document.getElementById('rtitle').textContent=title;document.getElementById('rdesc').textContent=desc;document.getElementById('hint').textContent=state.type==='goods'?'ⓘ Result is based on actual movement of goods from supplier’s location to customer’s location.':'ⓘ Result is based on the general place of supply rule for services i.e., the place of residence of supplier.'}
+document.addEventListener('click',e=>{let o=e.target.closest('.option');if(o){state[o.dataset.field]=o.dataset.key;update()}let t=e.target.closest('.tab');if(t){state.type=t.dataset.type;update()}});update();
+</script>
+</body>
+</html>
